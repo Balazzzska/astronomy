@@ -16,7 +16,7 @@ from astroplan import Observer, FixedTarget
 # your Messier list
 FIXED_TARGETS = [f"M{m:03d}" for m in range(1, 110)]
 
-# the extra solar‐system bodies you care about
+# the extra solar-system bodies you care about
 # note: use the same name keys you want in your plot legend/DataFrame
 EPHEMERIS_TARGETS = {
     "Venus": lambda t, obs: get_body("venus", t, obs.location),
