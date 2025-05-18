@@ -14,7 +14,7 @@ from astropy.coordinates import SkyCoord, get_body
 from astroplan import Observer, FixedTarget
 
 # your Messier list
-FIXED_TARGETS = [f"M{m:03d}" for m in range(1, 110)]
+FIXED_TARGETS = [f"M{m:03d}" for m in range(1, 111)]
 
 # the extra solar‐system bodies you care about
 # note: use the same name keys you want in your plot legend/DataFrame
