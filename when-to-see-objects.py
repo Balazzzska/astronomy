@@ -41,7 +41,7 @@ try:
 except FileNotFoundError:
     stats = pd.DataFrame()
 
-    # loop Messier *and* solar‐system bodies
+    # loop over Messier objects and solar-system bodies
     for name in FIXED_TARGETS + list(EPHEMERIS_TARGETS):
         print(f"Processing {name}...")
         # build a function that, given Time, returns a SkyCoord
