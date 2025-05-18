@@ -1,9 +1,8 @@
 import json
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-import mplcursors
+import plotly.graph_objects as go
+import plotly.express as px
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -82,9 +81,10 @@ except FileNotFoundError:
 
 stats["alt_deg"] = stats["alt_deg"].apply(lambda x: np.nan if x < 0 else x)
 
-fig, ax = plt.subplots()
-ax = [ax]
+fig = go.Figure()
 bestday = {}
+
+palette = px.colors.qualitative.Plotly
 
 for cnt, name in enumerate(stats["target"].unique()):
     if "oo" in name:
@@ -99,36 +99,36 @@ for cnt, name in enumerate(stats["target"].unique()):
 
     bestday[name] = md.isoformat()
 
-    kwargs = {
-        "color": f"C{cnt}",
-        "lw": 1 if name in FIXED_TARGETS else 2,
-    }
+    color = palette[cnt % len(palette)]
+    width = 1 if name in FIXED_TARGETS else 2
 
-    if "oo" in name:
-        kwargs["lw"] = 3
-        kwargs["alpha"] = 0.5
-
-    ax[0].plot(
-        df["date"],
-        df["alt_deg"],
-        label=f"{name} max alt {ma:.1f}° on {md:%Y-%m-%d}",
-        **kwargs,
+    fig.add_trace(
+        go.Scatter(
+            x=df["date"],
+            y=df["alt_deg"],
+            mode="lines",
+            name=f"{name} max alt {ma:.1f}° on {md:%Y-%m-%d}",
+            line=dict(color=color, width=width),
+            opacity=0.5 if "oo" in name else 1,
+        )
     )
-    ax[0].scatter([md], [ma], color=f"C{cnt}", marker="o", s=100)
 
-for a in ax:
-    a.xaxis.set_major_locator(mdates.MonthLocator())
-    a.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%b-%d"))
-    a.grid(True, which="major", ls="--", alpha=0.4)
-    # a.legend()
+    fig.add_trace(
+        go.Scatter(
+            x=[md],
+            y=[ma],
+            mode="markers",
+            marker=dict(color=color, size=10),
+            showlegend=False,
+        )
+    )
 
-json.dump(
-    bestday,
-    open("bestday.json", "w"),
-    indent=4,
+fig.update_layout(
+    yaxis_title="Altitude (degrees)",
+    xaxis=dict(dtick="M1", tickformat="%Y-%b-%d", showgrid=True),
 )
 
-ax[0].set_ylabel("Altitude (degrees)")
+json.dump(bestday, open("bestday.json", "w"), indent=4)
 
-mplcursors.cursor()
-plt.show()
+fig.write_html("when-to-see-objects.html", include_plotlyjs="cdn")
+fig.show()
