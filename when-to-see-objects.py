@@ -87,8 +87,6 @@ ax = [ax]
 bestday = {}
 
 for cnt, name in enumerate(stats["target"].unique()):
-    if "oo" in name:
-        continue
 
     df = stats[stats["target"] == name].sort_values("date")
 
@@ -104,7 +102,7 @@ for cnt, name in enumerate(stats["target"].unique()):
         "lw": 1 if name in FIXED_TARGETS else 2,
     }
 
-    if "oo" in name:
+    if name.lower() == "moon":
         kwargs["lw"] = 3
         kwargs["alpha"] = 0.5
 
@@ -122,11 +120,12 @@ for a in ax:
     a.grid(True, which="major", ls="--", alpha=0.4)
     # a.legend()
 
-json.dump(
-    bestday,
-    open("bestday.json", "w"),
-    indent=4,
-)
+with open("bestday.json", "w") as f:
+    json.dump(
+        bestday,
+        f,
+        indent=4,
+    )
 
 ax[0].set_ylabel("Altitude (degrees)")
 
